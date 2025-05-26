@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menü-Konfigurator - Premium Catering</title>
+    <style>
+        /* CSS Variablen für einfache Anpassung */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --white: #ffffff;
+            --gray-100: #f1f3f4;
+            --gray-600: #6c757d;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-lg: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--gray-100);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .steps {
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            background: var(--gray-100);
+            gap: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-lg);
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .step-content {
+            padding: 2rem;
+            display: none;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            border-color: var(--secondary-color);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-card.selected {
+            border-color: var(--success-color);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            margin-top: 1rem;
+            resize: vertical;
+        }
+
+        .custom-input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+        }
+
+        .btn-danger {
+            background: var(--accent-color);
+        }
+
+        .summary-card {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-top: 1rem;
+        }
+
+        .price-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .dietary-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 1rem 0;
+        }
+
+        .dietary-tag {
+            background: var(--warning-color);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dietary-tag.selected {
+            background: var(--success-color);
+        }
+
+        @media (max-width: 768px) {
+            .steps {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1>🍽️ Ihr individuelles Menü zusammenstellen</h1>
+            <p>Erstellen Sie Ihr perfektes Catering-Menü nach Ihren Wünschen</p>
+        </div>
+
+        <!-- Schritte-Navigation -->
+        <div class="steps">
+            <div class="step active" data-step="1">
+                <span>1️⃣</span>
+                <span>Kategorie wählen</span>
+            </div>
+            <div class="step" data-step="2">
+                <span>2️⃣</span>
+                <span>Gerichte auswählen</span>
+            </div>
+            <div class="step" data-step="3">
+                <span>3️⃣</span>
+                <span>Anpassungen</span>
+            </div>
+            <div class="step" data-step="4">
+                <span>4️⃣</span>
+                <span>Zusammenfassung</span>
+            </div>
+        </div>
+
+        <!-- Schritt 1: Kategorie wählen -->
+        <div class="step-content active" id="step-1">
+            <h3>🥘 Welche Art von Veranstaltung planen Sie?</h3>
+            <div class="category-grid">
+                <div class="category-card" data-category="business">
+                    <h4>🏢 Business Event</h4>
+                    <p>Professionelle Meetings, Konferenzen, Geschäftsessen</p>
+                    <strong>Ab 25€ pro Person</strong>
+                </div>
+                <div class="category-card" data-category="wedding">
+                    <h4>💒 Hochzeit</h4>
+                    <p>Romantische Hochzeitsfeiern, von intim bis glamourös</p>
+                    <strong>Ab 45€ pro Person</strong>
+                </div>
+                <div class="category-card" data-category="private">
+                    <h4>🎉 Private Feier</h4>
+                    <p>Geburtstage, Jubiläen, Familienfeiern</p>
+                    <strong>Ab 20€ pro Person</strong>
+                </div>
+                <div class="category-card" data-category="custom">
+                    <h4>✨ Individuell</h4>
+                    <p>Komplett nach Ihren Wünschen</p>
+                    <strong>Preis auf Anfrage</strong>
+                </div>
+            </div>
+            <button class="btn" onclick="nextStep(2)">Weiter →</button>
+        </div>
+
+        <!-- Schritt 2: Gerichte auswählen -->
+        <div class="step-content" id="step-2">
+            <h3>🍴 Wählen Sie Ihre Lieblingsgerichte</h3>
+            
+            <!-- Vorspeisen -->
+            <div style="margin-bottom: 2rem;">
+                <h4>🥗 Vorspeisen</h4>
+                <div class="category-grid">
+                    <div class="category-card" data-dish="appetizer-1" data-price="8">
+                        <h5>Carpaccio vom Rind</h5>
+                        <p>Mit Rucola und Parmesan</p>
+                        <strong>8€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="appetizer-2" data-price="6">
+                        <h5>Gemischter Salat</h5>
+                        <p>Frische Saison-Zutaten</p>
+                        <strong>6€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="custom-appetizer">
+                        <h5>🎨 Eigene Vorspeise</h5>
+                        <p>Beschreiben Sie Ihre Wunsch-Vorspeise</p>
+                        <textarea class="custom-input" placeholder="Z.B: Bruschetta mit Tomaten und Basilikum, Käseplatte mit regionalen Spezialitäten..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hauptgerichte -->
+            <div style="margin-bottom: 2rem;">
+                <h4>🥩 Hauptgerichte</h4>
+                <div class="category-grid">
+                    <div class="category-card" data-dish="main-1" data-price="22">
+                        <h5>Rinderfilet</h5>
+                        <p>Mit Rotwein-Jus und Gemüse</p>
+                        <strong>22€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="main-2" data-price="18">
+                        <h5>Lachs gegrillt</h5>
+                        <p>Mit Kräuter-Butter</p>
+                        <strong>18€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="custom-main">
+                        <h5>🎨 Eigenes Hauptgericht</h5>
+                        <p>Ihr Wunsch-Hauptgericht</p>
+                        <textarea class="custom-input" placeholder="Z.B: Hähnchen-Curry mit Jasmin-Reis, Vegetarische Lasagne, Paella..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desserts -->
+            <div style="margin-bottom: 2rem;">
+                <h4>🍰 Desserts</h4>
+                <div class="category-grid">
+                    <div class="category-card" data-dish="dessert-1" data-price="7">
+                        <h5>Tiramisu</h5>
+                        <p>Hausgemacht</p>
+                        <strong>7€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="dessert-2" data-price="9">
+                        <h5>Schokoladen-Mousse</h5>
+                        <p>Mit Beeren</p>
+                        <strong>9€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-dish="custom-dessert">
+                        <h5>🎨 Eigenes Dessert</h5>
+                        <p>Ihr Wunsch-Dessert</p>
+                        <textarea class="custom-input" placeholder="Z.B: Apfelstrudel mit Vanille-Eis, Käsekuchen, Obstplatte..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="previousStep(1)">← Zurück</button>
+            <button class="btn btn-success" onclick="nextStep(3)">Weiter →</button>
+        </div>
+
+        <!-- Schritt 3: Anpassungen -->
+        <div class="step-content" id="step-3">
+            <h3>⚙️ Besondere Wünsche & Anpassungen</h3>
+            
+            <div style="margin-bottom: 2rem;">
+                <h4>🌱 Ernährungsbesonderheiten</h4>
+                <p>Wählen Sie alle zutreffenden Optionen:</p>
+                <div class="dietary-options">
+                    <div class="dietary-tag" data-dietary="vegetarian">🥬 Vegetarisch</div>
+                    <div class="dietary-tag" data-dietary="vegan">🌱 Vegan</div>
+                    <div class="dietary-tag" data-dietary="gluten-free">🌾 Glutenfrei</div>
+                    <div class="dietary-tag" data-dietary="lactose-free">🥛 Laktosefrei</div>
+                    <div class="dietary-tag" data-dietary="halal">🕌 Halal</div>
+                    <div class="dietary-tag" data-dietary="kosher">✡️ Kosher</div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4>👥 Anzahl Gäste</h4>
+                <input type="number" class="custom-input" id="guest-count" placeholder="Wie viele Gäste erwarten Sie?" min="1" value="50">
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4>📝 Besondere Wünsche</h4>
+                <textarea class="custom-input" id="special-requests" placeholder="Haben Sie besondere Wünsche? Z.B.: Allergien, spezielle Dekoration, Musik-Wünsche, Timing..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 2rem;">
+                <h4>🍷 Getränke-Service</h4>
+                <div class="category-grid">
+                    <div class="category-card" data-drinks="basic">
+                        <h5>Basis-Paket</h5>
+                        <p>Wasser, Säfte, Kaffee</p>
+                        <strong>+8€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-drinks="premium">
+                        <h5>Premium-Paket</h5>
+                        <p>Inkl. Wein und Sekt</p>
+                        <strong>+15€ pro Person</strong>
+                    </div>
+                    <div class="category-card" data-drinks="custom">
+                        <h5>Individuelle Getränke</h5>
+                        <textarea class="custom-input" placeholder="Beschreiben Sie Ihre Getränke-Wünsche..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn" onclick="previousStep(2)">← Zurück</button>
+            <button class="btn btn-success" onclick="nextStep(4)">Weiter →</button>
+        </div>
+
+        <!-- Schritt 4: Zusammenfassung -->
+        <div class="step-content" id="step-4">
+            <h3>📋 Ihre Menü-Zusammenfassung</h3>
+            
+            <div class="summary-card">
+                <h4>🍽️ Ausgewählte Gerichte:</h4>
+                <div id="selected-dishes"></div>
+                
+                <h4>🌱 Ernährungsbesonderheiten:</h4>
+                <div id="selected-dietary"></div>
+                
+                <h4>👥 Gästeanzahl:</h4>
+                <div id="final-guest-count"></div>
+                
+                <h4>🍷 Getränke:</h4>
+                <div id="selected-drinks"></div>
+                
+                <h4>📝 Besondere Wünsche:</h4>
+                <div id="final-special-requests"></div>
+                
+                <div class="price-display" id="total-price">
+                    Geschätzter Preis: 0€
+                </div>
+                
+                <p style="text-align: center; color: var(--gray-600); font-size: 0.9rem;">
+                    * Unverbindliche Preisschätzung. Finaler Preis nach persönlicher Beratung.
+                </p>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem; gap: 1rem; display: flex; justify-content: center;">
+                <button class="btn" onclick="previousStep(3)">← Zurück</button>
+                <button class="btn btn-success" onclick="sendMenuRequest()">📤 Anfrage senden</button>
+                <button class="btn btn-danger" onclick="resetConfigurator()">🗑️ Neu starten</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript für den Menü-Konfigurator
+        // Hier erklären wir jeden Schritt ausführlich für Anfänger
+
+        // Globale Variablen für die ausgewählten Optionen
+        let selectedCategory = '';           // Speichert die gewählte Kategorie
+        let selectedDishes = [];            // Array für alle ausgewählten Gerichte
+        let selectedDietary = [];           // Array für Ernährungsbesonderheiten
+        let selectedDrinks = '';            // Gewähltes Getränke-Paket
+        let guestCount = 50;               // Anzahl der Gäste
+        let totalPrice = 0;                // Gesamtpreis
+        
+        // Event Listeners hinzufügen wenn die Seite geladen ist
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventHandlers();          // Alle Klick-Events einrichten
+        });
+        
+        // Funktion: Event Handlers für alle interaktiven Elemente
+        function setupEventHandlers() {
+            // Kategorie-Karten klickbar machen
+            document.querySelectorAll('.category-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    handleCardSelection(this);
+                });
+            });
+            
+            // Ernährungs-Tags klickbar machen
+            document.querySelectorAll('.dietary-tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    toggleDietaryOption(this);
+                });
+            });
+            
+            // Gäste-Anzahl überwachen
+            const guestInput = document.getElementById('guest-count');
+            if (guestInput) {
+                guestInput.addEventListener('input', function() {
+                    guestCount = parseInt(this.value) || 0;
+                    updateTotalPrice();
+                });
+            }
+        }
+        
+        // Funktion: Karten-Auswahl handhaben
+        function handleCardSelection(card) {
+            const step = getCurrentStep();
+            
+            if (step === 1) {
+                // Schritt 1: Kategorie auswählen
+                // Alle anderen Karten deselektieren
+                document.querySelectorAll('#step-1 .category-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Diese Karte auswählen
+                card.classList.add('selected');
+                selectedCategory = card.dataset.category;
+                
+            } else if (step === 2) {
+                // Schritt 2: Gerichte auswählen
+                toggleDishSelection(card);
+                
+            } else if (step === 3) {
+                // Schritt 3: Getränke auswählen
+                if (card.dataset.drinks) {
+                    document.querySelectorAll('[data-drinks]').forEach(c => {
+                        c.classList.remove('selected');
+                    });
+                    card.classList.add('selected');
+                    selectedDrinks = card.dataset.drinks;
+                }
+            }
+            
+            updateTotalPrice(); // Preis neu berechnen
+        }
+        
+        // Funktion: Gericht auswählen/abwählen
+        function toggleDishSelection(card) {
+            const dishId = card.dataset.dish;
+            const price = parseInt(card.dataset.price) || 0;
+            
+            if (card.classList.contains('selected')) {
+                // Gericht abwählen
+                card.classList.remove('selected');
+                selectedDishes = selectedDishes.filter(dish => dish.id !== dishId);
+            } else {
+                // Gericht auswählen
+                card.classList.add('selected');
+                
+                // Gericht-Daten sammeln
+                const dishData = {
+                    id: dishId,
+                    name: card.querySelector('h5').textContent,
+                    description: card.querySelector('p').textContent,
+                    price: price,
+                    customText: ''
+                };
+                
+                // Falls es ein Custom-Gericht ist, Text speichern
+                const textarea = card.querySelector('textarea');
+                if (textarea) {
+                    dishData.customText = textarea.value;
+                    // Event Listener für Textarea hinzufügen
+                    textarea.addEventListener('input', function() {
+                        const dish = selectedDishes.find(d => d.id === dishId);
+                        if (dish) {
+                            dish.customText = this.value;
+                        }
+                    });
+                }
+                
+                selectedDishes.push(dishData);
+            }
+        }
+        
+        // Funktion: Ernährungs-Option umschalten
+        function toggleDietaryOption(tag) {
+            const dietary = tag.dataset.dietary;
+            
+            if (tag.classList.contains('selected')) {
+                tag.classList.remove('selected');
+                selectedDietary = selectedDietary.filter(d => d !== dietary);
+            } else {
+                tag.classList.add('selected');
+                selectedDietary.push(dietary);
+            }
+        }
+        
+        // Funktion: Zum nächsten Schritt wechseln
+        function nextStep(stepNumber) {
+            // Validierung je nach Schritt
+            if (!validateCurrentStep()) {
+                return; // Stoppen wenn Validierung fehlschlägt
+            }
+            
+            showStep(stepNumber);
+            
+            // Zusammenfassung aktualisieren wenn wir zu Schritt 4 gehen
+            if (stepNumber === 4) {
+                updateSummary();
+            }
+        }
+        
+        // Funktion: Zum vorherigen Schritt wechseln
+        function previousStep(stepNumber) {
+            showStep(stepNumber);
+        }
+        
+        // Funktion: Bestimmten Schritt anzeigen
+        function showStep(stepNumber) {
+            // Alle Schritte verstecken
+            document.querySelectorAll('.step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Gewünschten Schritt anzeigen
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+            document.querySelector(`[data-step="${stepNumber}"]`).classList.add('active');
+        }
+        
+        // Funktion: Aktuellen Schritt ermitteln
+        function getCurrentStep() {
+            const activeStep = document.querySelector('.step.active');
+            return parseInt(activeStep.dataset.step);
+        }
+        
+        // Funktion: Aktuellen Schritt validieren
+        function validateCurrentStep() {
+            const step = getCurrentStep();
+            
+            switch(step) {
+                case 1:
+                    if (!selectedCategory) {
+                        alert('Bitte wählen Sie eine Kategorie aus!');
+                        return false;
+                    }
+                    break;
+                    
+                case 2:
+                    if (selectedDishes.length === 0) {
+                        alert('Bitte wählen Sie mindestens ein Gericht aus!');
+                        return false;
+                    }
+                    break;
+                    
+                case 3:
+                    // Optional: Weitere Validierungen
+                    break;
+            }
+            
+            return true;
+        }
+        
+        // Funktion: Gesamtpreis berechnen und anzeigen
+        function updateTotalPrice() {
+            totalPrice = 0;
+            
+            // Preis für Gerichte berechnen
+            selectedDishes.forEach(dish => {
+                if (dish.price) {
+                    totalPrice += dish.price * guestCount;
+                }
+            });
+            
+            // Getränke-Preis hinzufügen
+            if (selectedDrinks === 'basic') {
+                totalPrice += 8 * guestCount;
+            } else if (selectedDrinks === 'premium') {
+                totalPrice += 15 * guestCount;
+            }
+            
+            // Preis-Anzeige aktualisieren
+            const priceDisplay = document.getElementById('total-price');
+            if (priceDisplay) {
+                priceDisplay.textContent = `Geschätzter Preis: ${totalPrice.toLocaleString('de-DE')}€`;
+            }
+        }
+        
+        // Funktion: Zusammenfassung aktualisieren
+        function updateSummary() {
+            // Gerichte anzeigen
+            const dishesContainer = document.getElementById('selected-dishes');
+            dishesContainer.innerHTML = '';
+            
+            selectedDishes.forEach(dish => {
+                const dishElement = document.createElement('div');
+                dishElement.innerHTML = `
+                    <strong>${dish.name}</strong> - ${dish.price}€ pro Person
+                    ${dish.customText ? `<br><em>"${dish.customText}"</em>` : ''}
+                `;
+                dishElement.style.marginBottom = '0.5rem';
+                dishesContainer.appendChild(dishElement);
+            });
+            
+            // Ernährungsbesonderheiten anzeigen
+            const dietaryContainer = document.getElementById('selected-dietary');
+            dietaryContainer.textContent = selectedDietary.length > 0 ? 
+                selectedDietary.join(', ') : 'Keine besonderen Anforderungen';
+            
+            // Gästeanzahl anzeigen
+            document.getElementById('final-guest-count').textContent = guestCount + ' Personen';
+            
+            // Getränke anzeigen
+            const drinksText = selectedDrinks === 'basic' ? 'Basis-Paket' :
+                              selectedDrinks === 'premium' ? 'Premium-Paket' :
+                              selectedDrinks === 'custom' ? 'Individuelle Getränke' : 'Keine Auswahl';
+            document.getElementById('selected-drinks').textContent = drinksText;
+            
+            // Besondere Wünsche anzeigen
+            const specialRequests = document.getElementById('special-requests')?.value || 'Keine besonderen Wünsche';
+            document.getElementById('final-special-requests').textContent = specialRequests;
+            
+            // Gesamtpreis aktualisieren
+            updateTotalPrice();
+        }
+        
+        // Funktion: Menü-Anfrage senden
+        function sendMenuRequest() {
+            // Alle Daten sammeln
+            const menuData = {
+                category: selectedCategory,
+                dishes: selectedDishes,
+                dietary: selectedDietary,
+                drinks: selectedDrinks,
+                guestCount: guestCount,
+                specialRequests: document.getElementById('special-requests')?.value || '',
+                totalPrice: totalPrice,
+                timestamp: new Date().toISOString()
+            };
+            
+            // In echten Anwendungen würden Sie hier die Daten an einen Server senden
+            console.log('Menü-Anfrage:', menuData);
+            
+            // Bestätigungs-Nachricht anzeigen
+            alert(`🎉 Vielen Dank für Ihre Anfrage!\n\nIhr individuelles Menü für ${guestCount} Personen wurde erfolgreich übermittelt.\n\nGeschätzter Preis: ${totalPrice.toLocaleString('de-DE')}€\n\nWir melden uns binnen 24 Stunden bei Ihnen!`);
+            
+            // Optional: Formular zurücksetzen
+            // resetConfigurator();
+        }
+        
+        // Funktion: Konfigurator zurücksetzen
+        function resetConfigurator() {
+            if (confirm('Möchten Sie wirklich alle Eingaben löschen und neu beginnen?')) {
+                // Alle Variablen zurücksetzen
+                selectedCategory = '';
+                selectedDishes = [];
+                selectedDietary = [];
+                selectedDrinks = '';
+                guestCount = 50;
+                totalPrice = 0;
+                
+                // Alle Auswahlen visuell zurücksetzen
+                document.querySelectorAll('.selected').forEach(element => {
+                    element.classList.remove('selected');
+                });
+                
+                // Alle Textfelder leeren
+                document.querySelectorAll('input, textarea').forEach(field => {
+                    field.value = '';
+                });
+                
+                // Zu Schritt 1 zurückkehren
+                showStep(1);
+                
+                alert('Konfigurator wurde zurückgesetzt!');
+            }
+        }
+    </script>
+</body>
+</html>
