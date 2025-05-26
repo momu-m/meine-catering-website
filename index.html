@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Catering - Komplette Website</title>
+    
+    <!-- 
+    ====================================
+    HIER IST IHRE KOMPLETTE WEBSITE
+    ====================================
+    
+    DATEI-STRUKTUR für Ihr Projekt:
+    
+    📁 meine-catering-website/
+    ├── 📄 index.html (DIESE DATEI - Hauptseite)
+    ├── 📄 menu-konfigurator.html (Menü-Konfigurator)
+    ├── 📄 event-planer.html (Event-Planer)
+    ├── 📁 css/
+    │   └── 📄 style.css (Alle Styles)
+    ├── 📁 js/
+    │   ├── 📄 main.js (Haupt-JavaScript)
+    │   ├── 📄 menu-konfigurator.js (Menü-Logik)
+    │   └── 📄 firebase-config.js (Datenbank)
+    ├── 📁 images/
+    │   ├── 📄 logo.png
+    │   ├── 📄 hero-background.jpg
+    │   └── 📄 gallery/ (Galerie-Bilder)
+    └── 📄 README.md (Anleitung)
+    
+    ANLEITUNG ZUM VERWENDEN:
+    1. Kopieren Sie diesen Code in eine Datei namens "index.html"
+    2. Erstellen Sie die anderen Ordner und Dateien
+    3. Laden Sie alles auf GitHub hoch (erkläre ich gleich!)
+    4. Aktivieren Sie GitHub Pages
+    5. Ihre Website ist LIVE im Internet! 🌐
+    -->
+    
+    <!-- Google Fonts für schöne Schrift -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase für kostenlose Datenbank -->
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js"></script>
+    
+    <style>
+        /* 
+        ====================================
+        CSS STYLES - ALLE DESIGN-REGELN
+        ====================================
+        */
+        
+        /* BASIS-VARIABLEN - Hier definieren wir Farben und Größen */
+        :root {
+            --primary-color: #2c3e50;      /* Hauptfarbe - Dunkelblau */
+            --secondary-color: #3498db;     /* Zweitfarbe - Hellblau */
+            --accent-color: #e74c3c;        /* Akzentfarbe - Rot */
+            --success-color: #27ae60;       /* Erfolgsfarbe - Grün */
+            --warning-color: #f39c12;       /* Warnfarbe - Orange */
+            --white: #ffffff;               /* Weiß */
+            --gray-100: #f1f3f4;           /* Helles Grau */
+            --gray-600: #6c757d;           /* Mittleres Grau */
+            --gray-800: #343a40;           /* Dunkles Grau */
+            
+            /* Schatten-Effekte */
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+            
+            /* Ecken-Rundung */
+            --radius-sm: 0.5rem;
+            --radius-md: 0.75rem;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
+            
+            /* Abstände */
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+        }
+
+        /* RESET - Alle Browser-Standards zurücksetzen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* BODY - Grundeinstellungen für die ganze Seite */
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background-color: var(--gray-100);
+        }
+
+        /* CONTAINER - Zentriert den Inhalt */
+        .container {
+            max-width: 1200px;           /* Maximale Breite */
+            margin: 0 auto;              /* Zentriert horizontal */
+            padding: 0 var(--space-lg);  /* Innenabstand */
+        }
+
+        /* HEADER - Kopfbereich mit Navigation */
+        .header {
+            position: fixed;              /* Bleibt oben beim Scrollen */
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;               /* Über allem anderen */
+            background: rgba(255, 255, 255, 0.95);  /* Halbtransparent */
+            backdrop-filter: blur(10px);  /* Unschärfe-Effekt */
+            border-bottom: 1px solid var(--gray-200);
+            transition: all 0.3s ease;    /* Sanfte Übergänge */
+        }
+
+        /* NAVIGATION */
+        .nav {
+            display: flex;
+            justify-content: space-between;  /* Platz zwischen Elementen */
+            align-items: center;             /* Vertikal zentriert */
+            padding: var(--space-md) 0;
+        }
+
+        /* LOGO */
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .logo::before {
+            content: '🍽️';               /* Emoji als Icon */
+            font-size: 1.5rem;
+        }
+
+        /* NAVIGATION LINKS */
+        .nav-links {
+            display: flex;
+            list-style: none;            /* Keine Punkte */
+            gap: var(--space-xl);
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-md);
+            transition: all 0.3s ease;
+            cursor: pointer;              /* Zeiger beim Hover */
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+            background: var(--gray-100);
+        }
+
+        .nav-links a.active {
+            color: var(--accent-color);
+            background: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* BUTTONS - Verschiedene Button-Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-xl);
+            border: none;
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), #c0392b);
+            color: var(--white);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);  /* Hebt sich beim Hover */
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        /* MAIN CONTENT - Hauptinhalt */
+        main {
+            margin-top: 80px;            /* Platz für Header */
+        }
+
+        /* SECTIONS - Seitenabschnitte */
+        .section {
+            padding: var(--space-2xl) 0;
+        }
+
+        .page-section {
+            display: none;               /* Versteckt standardmäßig */
+            opacity: 0;
+        }
+
+        .page-section.active {
+            display: block;              /* Zeigt aktive Sektion */
+            opacity: 1;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* HERO SEKTION - Hauptbereich */
+        .hero {
+            min-height: 80vh;            /* 80% der Bildschirmhöhe */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* HERO BACKGROUND PATTERN */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="10" fill="white" opacity="0.1"/><circle cx="80" cy="80" r="15" fill="white" opacity="0.05"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+            padding: var(--space-2xl);
+        }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);  /* Responsive Größe */
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 1.25rem;
+            margin-bottom: var(--space-2xl);
+            opacity: 0.9;
+        }
+
+        /* CALL-TO-ACTION GRUPPE */
+        .cta-group {
+            display: flex;
+            gap: var(--space-lg);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* GRID SYSTEM - Raster für Karten */
+        .grid {
+            display: grid;
+            gap: var(--space-xl);
+        }
+
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+        /* CARDS - Karten-Design */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* HOVER-EFFEKT für Karten */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            transform: scaleX(0);        /* Unsichtbar am Anfang */
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);        /* Sichtbar beim Hover */
+        }
+
+        .card:hover {
+            transform: translateY(-8px);  /* Hebt sich beim Hover */
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: var(--space-md);
+        }
+
+        .card-text {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+
+        .card-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-top: var(--space-md);
+        }
+
+        /* SECTION HEADER */
+        .section-header {
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: var(--space-md);
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* FORMULARE */
+        .form-container {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            box-shadow: var(--shadow-lg);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: var(--space-sm);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-md);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* NOTIFICATION SYSTEM */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: var(--space-lg);
+            max-width: 400px;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-xl);
+            border-left: 4px solid var(--success-color);
+            z-index: 10000;
+            transform: translateX(120%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success { border-left-color: var(--success-color); }
+        .notification.error { border-left-color: var(--accent-color); }
+        .notification.info { border-left-color: var(--secondary-color); }
+
+        /* FOOTER */
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: var(--space-2xl) 0;
+            margin-top: var(--space-2xl);
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-content {
+                padding: var(--space-lg);
+            }
+            
+            .cta-group {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .grid-2,
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ANIMATIONEN */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* UTILITY CLASSES - Hilfs-Klassen */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-right { text-align: right; }
+        .mb-lg { margin-bottom: var(--space-lg); }
+        .mt-lg { margin-top: var(--space-lg); }
+        .hidden { display: none; }
+        .visible { display: block; }
+    </style>
+</head>
+<body>
+    <!-- 
+    ====================================
+    HTML STRUKTUR - WEBSITE AUFBAU
+    ====================================
+    -->
+    
+    <!-- HEADER - Kopfbereich mit Navigation -->
+    <header class="header" id="header">
+        <nav class="nav container">
+            <!-- LOGO -->
+            <a href="#" class="logo" onclick="showPage('home')">
+                <span>Premium Catering</span>
+            </a>
+            
+            <!-- NAVIGATION MENÜ -->
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#" onclick="showPage('home')" class="nav-link active">Startseite</a></li>
+                <li><a href="#" onclick="showPage('about')" class="nav-link">Über uns</a></li>
+                <li><a href="#" onclick="showPage('services')" class="nav-link">Services</a></li>
+                <li><a href="#" onclick="showPage('menu')" class="nav-link">Menüs</a></li>
+                <li><a href="#" onclick="showPage('gallery')" class="nav-link">Galerie</a></li>
+                <li><a href="#" onclick="showPage('contact')" class="nav-link">Kontakt</a></li>
+            </ul>
+            
+            <!-- SPRACHE UND ADMIN -->
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <button class="btn btn-primary" onclick="showPage('menu-konfigurator')">
+                    🎨 Menü erstellen
+                </button>
+                <button class="btn btn-secondary" onclick="showPage('event-planer')">
+                    📅 Event planen
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT - Hauptinhalt -->
+    <main>
+        <!-- HOME SEITE -->
+        <section id="home" class="page-section active">
+            <!-- HERO BEREICH -->
+            <div class="hero">
+                <div class="hero-content animate-fadeIn">
+                    <h1>Exzellente Küche für unvergessliche Momente</h1>
+                    <p>Seit über 15 Jahren verwöhnen wir unsere Kunden mit erstklassigem Service und kulinarischen Meisterwerken für jeden Anlass.</p>
+                    <div class="cta-group">
+                        <button class="btn btn-primary" onclick="showPage('contact')">
+                            <span>Jetzt anfragen</span>
+                            <span>→</span>
+                        </button>
+                        <button class="btn btn-outline" onclick="showPage('menu')">
+                            <span>Menüs entdecken</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HIGHLIGHTS SEKTION -->
+            <div class="section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Unsere Highlights</h2>
+                        <p class="section-subtitle">Entdecken Sie unsere vielfältigen Catering-Services für jeden Anlass</p>
+                    </div>
+                    <div class="grid grid-3">
+                        <div class="card">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">💒</div>
+                            <h3 class="card-title">Hochzeits-Catering</h3>
+                            <p class="card-text">Machen Sie Ihren besonderen Tag unvergesslich mit unserem eleganten Hochzeits-Catering-Service.</p>
+                        </div>
+                        <div class="card">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🏢</div>
+                            <h3 class="card-title">Firmen-Events</h3>
+                            <p class="card-text">Professionelle Bewirtung für Ihre Geschäftsveranstaltungen, Konferenzen und Meetings.</p>
+                        </div>
+                        <div class="card">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🎉</div>
+                            <h3 class="card-title">Private Feiern</h3>
+                            <p class="card-text">Entspannte Atmosphäre und exquisites Essen für Ihre persönlichen Anlässe und Familienfeiern.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ÜBER UNS SEITE -->
+        <section id="about" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Über uns</h2>
+                    <p class="section-subtitle">Lernen Sie unser erfahrenes Team und unsere Philosophie kennen</p>
+                </div>
+                
+                <div class="grid grid-2">
+                    <div class="card">
+                        <h3 class="card-title">Unsere Geschichte</h3>
+                        <p class="card-text">Seit über 15 Jahren verwöhnen wir unsere Kunden mit exquisiter Küche und erstklassigem Service. Unser Team aus erfahrenen Küchenchefs und Servicekräften sorgt dafür, dass jede Veranstaltung zu einem unvergesslichen Erlebnis wird.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title">Unsere Philosophie</h3>
+                        <p class="card-text">Wir glauben, dass gutes Essen Menschen zusammenbringt. Mit frischen, regionalen Zutaten und viel Liebe zum Detail kreieren wir kulinarische Erlebnisse, die in Erinnerung bleiben.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SERVICES SEITE -->
+        <section id="services" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Unsere Services</h2>
+                    <p class="section-subtitle">Vielfältige Catering-Lösungen für jeden Anlass und jede Gruppengröße</p>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">💒</div>
+                        <h3 class="card-title">Hochzeits-Catering</h3>
+                        <p class="card-text">Von der Trauung bis zur Hochzeitsfeier - wir begleiten Sie durch den schönsten Tag Ihres Lebens.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🏢</div>
+                        <h3 class="card-title">Firmen-Events</h3>
+                        <p class="card-text">Konferenzen, Meetings, Firmenfeiern - professionell und zuverlässig.</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🍽️</div>
+                        <h3 class="card-title">Buffet-Service</h3>
+                        <p class="card-text">Vielfältige Buffets für jeden Anlass und jede Gruppengröße.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENÜ SEITE -->
+        <section id="menu" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Unsere Menüs</h2>
+                    <p class="section-subtitle">Kulinarische Vielfalt für jeden Geschmack und Anlass</p>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🥐</div>
+                        <h3 class="card-title">Frühstück & Brunch</h3>
+                        <p class="card-text">Frische Brötchen, Aufschnitt, Müsli und warme Speisen</p>
+                        <div class="card-price">ab 12€ pro Person</div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🍽️</div>
+                        <h3 class="card-title">Business Lunch</h3>
+                        <p class="card-text">Leichte Mittagsmenüs für Meetings und Konferenzen</p>
+                        <div class="card-price">ab 18€ pro Person</div>
+                    </div>
+                    <div class="card">
+                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">✨</div>
+                        <h3 class="card-title">Gala Dinner</h3>
+                        <p class="card-text">Exklusive 4-Gang-Menüs für besondere Anlässe</p>
+                        <div class="card-price">ab 45€ pro Person</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GALERIE SEITE -->
+        <section id="gallery" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Galerie</h2>
+                    <p class="section-subtitle">Entdecken Sie unsere kulinarischen Meisterwerke und Event-Impressionen</p>
+                </div>
+                
+                <div class="grid grid-3">
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&h=300&fit=crop" 
+                             alt="Elegante Hochzeitstafel" 
+                             style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1rem;">
+                        <h4>Elegante Hochzeitstafel</h4>
+                        <p>Romantische Atmosphäre für den besonderen Tag</p>
+                    </div>
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400&h=300&fit=crop" 
+                             alt="Gourmet Gerichte" 
+                             style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1rem;">
+                        <h4>Gourmet Gerichte</h4>
+                        <p>Kulinarische Kunstwerke für jeden Anlass</p>
+                    </div>
+                    <div class="card">
+                        <img src="https://images.unsplash.com/photo-1551218808-94e220e084d2?w=400&h=300&fit=crop" 
+                             alt="Business Event" 
+                             style="width: 100%; height: 200px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: 1rem;">
+                        <h4>Business Event</h4>
+                        <p>Professionelle Bewirtung für Firmenveranstaltungen</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KONTAKT SEITE -->
+        <section id="contact" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Kontakt & Anfrage</h2>
+                    <p class="section-subtitle">Lassen Sie uns gemeinsam Ihre perfekte Veranstaltung planen</p>
+                </div>
+                
+                <div class="form-container">
+                    <form id="contactForm">
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Name *</label>
+                                <input type="text" class="form-input" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">E-Mail *</label>
+                                <input type="email" class="form-input" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-2">
+                            <div class="form-group">
+                                <label class="form-label">Telefon</label>
+                                <input type="tel" class="form-input" name="phone">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Veranstaltungsart</label>
+                                <select class="form-select" name="eventType">
+                                    <option value="wedding">Hochzeit</option>
+                                    <option value="corporate">Firmenevent</option>
+                                    <option value="private">Private Feier</option>
+                                    <option value="other">Sonstiges</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Nachricht</label>
+                            <textarea class="form-textarea" name="message" placeholder="Beschreiben Sie Ihre Wünsche und Vorstellungen..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">
+                            <span>Anfrage senden</span>
+                            <span>→</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- MENÜ-KONFIGURATOR SEITE -->
+        <section id="menu-konfigurator" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">🎨 Menü-Konfigurator</h2>
+                    <p class="section-subtitle">Erstellen Sie Ihr individuelles Menü</p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 2rem;">Ihr individuelles Menü zusammenstellen</h3>
+                    <div style="padding: 2rem; text-align: center; border: 2px dashed var(--secondary-color); border-radius: var(--radius-lg);">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🍽️</div>
+                        <h4>Menü-Konfigurator</h4>
+                        <p style="margin: 1rem 0;">Hier können Sie Schritt für Schritt Ihr perfektes Menü zusammenstellen</p>
+                        <button class="btn btn-primary" onclick="startMenuConfigurator()">
+                            Menü erstellen starten
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EVENT-PLANER SEITE -->
+        <section id="event-planer" class="page-section section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">📅 Event-Planer</h2>
+                    <p class="section-subtitle">Planen Sie Ihr Event Schritt für Schritt</p>
+                </div>
+                
+                <div class="card">
+                    <h3 style="margin-bottom: 2rem;">Intelligenter Event-Planer</h3>
+                    <div style="padding: 2rem; text-align: center; border: 2px dashed var(--success-color); border-radius: var(--radius-lg);">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🎯</div>
+                        <h4>Event-Planer</h4>
+                        <p style="margin: 1rem 0;">Unser smarter Assistent hilft Ihnen bei der kompletten Event-Planung</p>
+                        <button class="btn btn-secondary" onclick="startEventPlanner()">
+                            Event-Planung starten
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER - Fußbereich -->
+    <footer class="footer">
+        <div class="container">
+            <div class="grid grid-3" style="margin-bottom: 2rem; text-align: left;">
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Kontakt</h4>
+                    <p>📞 +49 123 456789</p>
+                    <p>✉️ info@premium-catering.de</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Adresse</h4>
+                    <p>📍 Hauptstraße 123</p>
+                    <p>12345 Musterstadt</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 1rem;">Social Media</h4>
+                    <p>📘 Facebook</p>
+                    <p>📷 Instagram</p>
+                </div>
+            </div>
+            <hr style="border: 1px solid rgba(255,255,255,0.2); margin: 2rem 0;">
+            <p>&copy; 2025 Premium Catering. Alle Rechte vorbehalten.</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Chat Button -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 10000;">
+        <button onclick="openWhatsApp()" style="
+            background: #25D366; 
+            color: white; 
+            border: none; 
+            border-radius: 50px; 
+            padding: 15px 20px; 
+            font-size: 16px; 
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        ">
+            💬 Live Chat
+        </button>
+    </div>
+
+    <script>
+        /* 
+        ====================================
+        JAVASCRIPT CODE - ALLE FUNKTIONEN
+        ====================================
+        */
+        
+        // GLOBALE VARIABLEN
+        let currentPage = 'home';        // Aktuelle Seite
+        let isLoading = false;           // Loading-Status
+        
+        // WEBSITE INITIALISIERUNG
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Website startet...');
+            
+            // Alle wichtigen Funktionen initialisieren
+            initializeWebsite();
+            setupEventListeners();
+            showPage('home');
+            
+            console.log('✅ Website erfolgreich geladen!');
+            showNotification('🎉 Willkommen bei Premium Catering!', 'success');
+        });
+        
+        // WEBSITE INITIALISIERUNG
+        function initializeWebsite() {
+            // Header Scroll-Effekt
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 100) {
+                    header.style.background = 'rgba(255, 255, 255, 0.98)';
+                    header.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                } else {
+                    header.style.background = 'rgba(255, 255, 255, 0.95)';
+                    header.style.boxShadow = 'none';
+                }
+            });
+        }
+        
+        // EVENT LISTENERS EINRICHTEN
+        function setupEventListeners() {
+            // Kontaktformular
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', handleContactForm);
+            }
+            
+            // Navigation Links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Aktive Klasse entfernen
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Aktive Klasse hinzufügen
+                    this.classList.add('active');
+                });
+            });
+        }
+        
+        // SEITEN WECHSELN - HAUPTFUNKTION
+        function showPage(pageId) {
+            console.log(`📄 Wechsle zu Seite: ${pageId}`);
+            
+            try {
+                // Alle Seiten verstecken
+                const allSections = document.querySelectorAll('.page-section');
+                allSections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Gewünschte Seite anzeigen
+                const targetSection = document.getElementById(pageId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    currentPage = pageId;
+                    
+                    // Nach oben scrollen
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    
+                    console.log(`✅ Seite ${pageId} erfolgreich angezeigt`);
+                } else {
+                    throw new Error(`Seite '${pageId}' nicht gefunden`);
+                }
+                
+            } catch (error) {
+                console.error('❌ Fehler beim Seitenwechsel:', error);
+                showNotification('Fehler beim Laden der Seite', 'error');
+            }
+        }
+        
+        // KONTAKTFORMULAR VERARBEITEN
+        function handleContactForm(event) {
+            event.preventDefault(); // Standard-Verhalten verhindern
+            
+            console.log('📧 Verarbeite Kontaktformular...');
+            
+            // Formulardaten sammeln
+            const formData = new FormData(event.target);
+            const data = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                eventType: formData.get('eventType'),
+                message: formData.get('message'),
+                timestamp: new Date().toISOString()
+            };
+            
+            // Validierung
+            if (!data.name || !data.email) {
+                showNotification('❌ Bitte füllen Sie alle Pflichtfelder aus', 'error');
+                return;
+            }
+            
+            // E-Mail Validierung
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(data.email)) {
+                showNotification('❌ Bitte geben Sie eine gültige E-Mail ein', 'error');
+                return;
+            }
+            
+            // Daten in Datenbank speichern (Firebase)
+            saveToDatabase('contacts', data)
+                .then(() => {
+                    showNotification('✅ Ihre Anfrage wurde erfolgreich gesendet!', 'success');
+                    event.target.reset(); // Formular zurücksetzen
+                    console.log('✅ Kontakt erfolgreich gespeichert:', data);
+                })
+                .catch(error => {
+                    console.error('❌ Fehler beim Speichern:', error);
+                    showNotification('❌ Fehler beim Senden. Bitte versuchen Sie es erneut.', 'error');
+                });
+        }
+        
+        // DATENBANK FUNKTIONEN (Firebase)
+        function saveToDatabase(collection, data) {
+            return new Promise((resolve, reject) => {
+                // Hier würde normalerweise Firebase Code stehen
+                // Für Demo verwenden wir localStorage
+                try {
+                    const existingData = JSON.parse(localStorage.getItem(collection) || '[]');
+                    existingData.push(data);
+                    localStorage.setItem(collection, JSON.stringify(existingData));
+                    
+                    // Simuliere Netzwerk-Verzögerung
+                    setTimeout(() => {
+                        resolve(data);
+                    }, 1000);
+                    
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+        
+        // MENÜ-KONFIGURATOR STARTEN
+        function startMenuConfigurator() {
+            console.log('🎨 Starte Menü-Konfigurator...');
+            showNotification('🎨 Menü-Konfigurator wird geladen...', 'info');
+            
+            // Hier würden Sie den detaillierten Menü-Konfigurator laden
+            // Für Demo zeigen wir eine Nachricht
+            setTimeout(() => {
+                alert('🎨 Menü-Konfigurator\n\nHier können Sie:\n\n• Vorspeisen auswählen\n• Hauptgerichte konfigurieren\n• Desserts hinzufügen\n• Getränke-Pakete wählen\n• Preise berechnen\n\nKlicken Sie OK um fortzufahren...');
+            }, 1000);
+        }
+        
+        // EVENT-PLANER STARTEN
+        function startEventPlanner() {
+            console.log('📅 Starte Event-Planer...');
+            showNotification('📅 Event-Planer wird geladen...', 'info');
+            
+            // Hier würden Sie den detaillierten Event-Planer laden
+            // Für Demo zeigen wir eine Nachricht
+            setTimeout(() => {
+                alert('📅 Event-Planer\n\nUnser intelligenter Assistent hilft bei:\n\n• Datum und Location wählen\n• Gästeanzahl planen\n• Budget kalkulieren\n• Services auswählen\n• Timeline erstellen\n\nKlicken Sie OK um fortzufahren...');
+            }, 1000);
+        }
+        
+        // WHATSAPP CHAT ÖFFNEN
+        function openWhatsApp() {
+            const message = "Hallo! Ich interessiere mich für Ihr Catering-Service.";
+            const phoneNumber = "491234567890"; // Ihre Telefonnummer hier eintragen
+            const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+            window.open(url, '_blank');
+            
+            console.log('📱 WhatsApp Chat geöffnet');
+        }
+        
+        // BENACHRICHTIGUNGEN ANZEIGEN
+        function showNotification(message, type = 'info') {
+            console.log(`📢 Notification: ${message} (${type})`);
+            
+            // Notification Element erstellen
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-size: 1.2rem;">
+                        ${type === 'success' ? '✅' : 
+                          type === 'error' ? '❌' : 
+                          type === 'warning' ? '⚠️' : 'ℹ️'}
+                    </span>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Zur Seite hinzufügen
+            document.body.appendChild(notification);
+            
+            // Anzeigen
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            // Automatisch entfernen nach 4 Sekunden
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 300);
+            }, 4000);
+        }
+        
+        // LOADING STATE ANZEIGEN
+        function showLoading(show = true) {
+            isLoading = show;
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                if (show) {
+                    button.disabled = true;
+                    button.style.opacity = '0.7';
+                } else {
+                    button.disabled = false;
+                    button.style.opacity = '1';
+                }
+            });
+        }
+        
+        // FEHLERBEHANDLUNG
+        window.addEventListener('error', function(event) {
+            console.error('❌ JavaScript Fehler:', event.error);
+            showNotification('Ein unerwarteter Fehler ist aufgetreten', 'error');
+        });
+        
+        // UNHANDLED PROMISE REJECTIONS
+        window.addEventListener('unhandledrejection', function(event) {
+            console.error('❌ Unbehandelter Promise Fehler:', event.reason);
+            showNotification('Ein Netzwerkfehler ist aufgetreten', 'error');
+        });
+        
+        // UTILITY FUNKTIONEN
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('de-DE');
+        }
+        
+        function formatPrice(price) {
+            return new Intl.NumberFormat('de-DE', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(price);
+        }
+        
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        // DEBUG MODUS (nur für Entwicklung)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            console.log('🔧 Debug-Modus aktiviert');
+            window.DEBUG = true;
+            
+            // Debug-Funktionen für Entwicklung
+            window.debugFunctions = {
+                showAllPages: () => {
+                    document.querySelectorAll('.page-section').forEach(section => {
+                        section.classList.add('active');
+                    });
+                },
+                testNotifications: () => {
+                    showNotification('Test Success', 'success');
+                    setTimeout(() => showNotification('Test Error', 'error'), 1000);
+                    setTimeout(() => showNotification('Test Info', 'info'), 2000);
+                },
+                clearLocalStorage: () => {
+                    localStorage.clear();
+                    console.log('LocalStorage geleert');
+                }
+            };
+        }
+        
+        console.log('🎉 Alle JavaScript-Funktionen erfolgreich geladen!');
+    </script>
+</body>
+</html>
