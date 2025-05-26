@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event-Planer - Premium Catering</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --white: #ffffff;
+            --gray-100: #f1f3f4;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-lg: 0.75rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--gray-100);
+            padding: 2rem;
+        }
+
+        .planner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .main-planner {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .timeline-sidebar {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-md);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .planning-step {
+            background: var(--gray-100);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .planning-step.completed {
+            border-left-color: var(--success-color);
+            background: rgba(39, 174, 96, 0.1);
+        }
+
+        .step-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background: var(--secondary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-success { background: var(--success-color); }
+        
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: var(--gray-100);
+        }
+
+        .timeline-date {
+            background: var(--secondary-color);
+            color: var(--white);
+            border-radius: 50px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            margin-right: 1rem;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-right: 0.5rem;
+            transform: scale(1.2);
+        }
+
+        .weather-info {
+            background: linear-gradient(135deg, #87CEEB, #4682B4);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .planner-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="planner-container">
+        <!-- Haupt-Planner -->
+        <div class="main-planner">
+            <h2>🎯 Intelligenter Event-Planer</h2>
+            <p>Planen Sie Ihr Event Schritt für Schritt mit unserem smarten Assistenten</p>
+
+            <!-- Schritt 1: Event-Details -->
+            <div class="planning-step" id="step-event-details">
+                <div class="step-header">
+                    <h3>1. 📅 Event-Details</h3>
+                    <button class="btn" onclick="toggleStep('step-event-details')">Bearbeiten</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <label>Event-Typ:</label>
+                        <select id="event-type" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;">
+                            <option>Hochzeit</option>
+                            <option>Geburtstag</option>
+                            <option>Firmenevent</option>
+                            <option>Jubiläum</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Datum:</label>
+                        <input type="date" id="event-date" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;">
+                    </div>
+                    <div>
+                        <label>Gästeanzahl:</label>
+                        <input type="number" id="guest-count" value="50" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;">
+                    </div>
+                    <div>
+                        <label>Budget (€):</label>
+                        <input type="number" id="budget" value="2000" style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="completeStep('step-event-details')" style="margin-top: 1rem;">✓ Fertig</button>
+            </div>
+
+            <!-- Schritt 2: Location & Wetter -->
+            <div class="planning-step" id="step-location">
+                <div class="step-header">
+                    <h3>2. 📍 Location & Wetter-Check</h3>
+                    <button class="btn" onclick="toggleStep('step-location')">Bearbeiten</button>
+                </div>
+                
+                <div>
+                    <label>Veranstaltungsort:</label>
+                    <input type="text" id="location" placeholder="Adresse oder Venue-Name" style="width: 100%; padding: 0.5rem; margin: 0.5rem 0;">
+                    <button class="btn" onclick="checkWeather()">🌤️ Wetter prüfen</button>
+                </div>
+                
+                <div id="weather-display" class="weather-info" style="display: none;">
+                    <h4>Wetter-Vorhersage</h4>
+                    <div id="weather-content"></div>
+                </div>
+                
+                <div style="margin-top: 1rem;">
+                    <h4>🏢 Venue-Empfehlungen:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 0.5rem;">
+                        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: var(--radius-lg);">
+                            <strong>Hotel Grandview</strong>
+                            <p>Für 20-100 Gäste</p>
+                            <small>Ab 50€ pro Person</small>
+                        </div>
+                        <div style="border: 1px solid #ddd; padding: 1rem; border-radius: var(--radius-lg);">
+                            <strong>Schlossgarten</strong>
+                            <p>Outdoor Events</p>
+                            <small>Ab 35€ pro Person</small>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="completeStep('step-location')" style="margin-top: 1rem;">✓ Fertig</button>
+            </div>
+
+            <!-- Schritt 3: Catering-Planung -->
+            <div class="planning-step" id="step-catering">
+                <div class="step-header">
+                    <h3>3. 🍽️ Catering-Planung</h3>
+                    <button class="btn" onclick="openMenuConfigurator()">Menü konfigurieren</button>
+                </div>
+                
+                <div>
+                    <h4>🧮 Smart-Empfehlungen basierend auf Ihren Daten:</h4>
+                    <div id="catering-recommendations">
+                        <!-- Wird dynamisch gefüllt -->
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="completeStep('step-catering')" style="margin-top: 1rem;">✓ Fertig</button>
+            </div>
+
+            <!-- Schritt 4: Services & Extras -->
+            <div class="planning-step" id="step-services">
+                <div class="step-header">
+                    <h3>4. ⚙️ Services & Extras</h3>
+                    <button class="btn" onclick="toggleStep('step-services')">Bearbeiten</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <label style="display: flex; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: var(--radius-lg); cursor: pointer;">
+                        <input type="checkbox" style="margin-right: 0.5rem;">
+                        🎵 DJ/Musik (+200€)
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: var(--radius-lg); cursor: pointer;">
+                        <input type="checkbox" style="margin-right: 0.5rem;">
+                        📸 Fotograf (+400€)
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: var(--radius-lg); cursor: pointer;">
+                        <input type="checkbox" style="margin-right: 0.5rem;">
+                        🌸 Dekoration (+150€)
+                    </label>
+                    <label style="display: flex; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: var(--radius-lg); cursor: pointer;">
+                        <input type="checkbox" style="margin-right: 0.5rem;">
+                        🚗 Transport-Service (+100€)
+                    </label>
+                </div>
+                <button class="btn btn-success" onclick="completeStep('step-services')" style="margin-top: 1rem;">✓ Fertig</button>
+            </div>
+
+            <!-- Finale Zusammenfassung -->
+            <div class="planning-step" id="step-summary">
+                <h3>📋 Event-Zusammenfassung</h3>
+                <div id="final-summary">
+                    <!-- Wird dynamisch gefüllt -->
+                </div>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-success" onclick="finalizeEvent()" style="font-size: 1.2rem; padding: 1rem 2rem;">
+                        🎉 Event finalisieren & Anfrage senden
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline-Sidebar -->
+        <div class="timeline-sidebar">
+            <h3>⏰ Event-Timeline</h3>
+            <p style="font-size: 0.9rem; color: var(--gray-600); margin-bottom: 1rem;">
+                Automatisch generiert basierend auf Ihrem Event-Datum
+            </p>
+            
+            <div id="timeline-container">
+                <!-- Wird dynamisch gefüllt -->
+            </div>
+
+            <h4 style="margin-top: 2rem;">✅ Checkliste</h4>
+            <ul class="checklist">
+                <li>
+                    <input type="checkbox" id="check-venue">
+                    <label for="check-venue">Venue bestätigen</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="check-catering">
+                    <label for="check-catering">Catering buchen</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="check-music">
+                    <label for="check-music">Musik organisieren</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="check-decorations">
+                    <label for="check-decorations">Dekoration planen</label>
+                </li>
+                <li>
+                    <input type="checkbox" id="check-invitations">
+                    <label for="check-invitations">Einladungen versenden</label>
+                </li>
+            </ul>
+
+            <!-- Echtzeit-Updates -->
+            <div style="margin-top: 2rem; padding: 1rem; background: var(--gray-100); border-radius: var(--radius-lg);">
+                <h4>📱 Live-Updates</h4>
+                <div id="live-updates">
+                    <div style="font-size: 0.9rem; margin: 0.5rem 0;">
+                        ✅ Event-Typ ausgewählt
+                    </div>
+                    <div style="font-size: 0.9rem; margin: 0.5rem 0;">
+                        ⏳ Datum wird geprüft...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Event-Planer JavaScript mit ausführlichen Kommentaren
+        
+        // Globale Variablen für Event-Daten
+        let eventData = {
+            type: '',
+            date: '',
+            guestCount: 50,
+            budget: 2000,
+            location: '',
+            services: [],
+            completedSteps: []
+        };
+
+        // Initialisierung wenn Seite geladen ist
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTimeline();           // Timeline erstellen
+            generateRecommendations();    // Empfehlungen generieren
+            updateLiveUpdates();         // Live-Updates starten
+        });
+
+        // Funktion: Schritt als abgeschlossen markieren
+        function completeStep(stepId) {
+            const step = document.getElementById(stepId);
+            step.classList.add('completed');
+            
+            // Schritt zu abgeschlossenen hinzufügen
+            if (!eventData.completedSteps.includes(stepId)) {
+                eventData.completedSteps.push(stepId);
+            }
+            
+            updateLiveUpdates();
+            generateRecommendations();
+            
+            // Erfolgsmeldung anzeigen
+            showNotification('✅ Schritt abgeschlossen!', 'success');
+        }
+
+        // Funktion: Schritt bearbeiten (aufklappen/zuklappen)
+        function toggleStep(stepId) {
+            const step = document.getElementById(stepId);
+            // Hier könnten Sie Logik für das Ein-/Ausklappen von Schritten hinzufügen
+            console.log('Bearbeite Schritt:', stepId);
+        }
+
+        // Funktion: Wetter-Check
+        function checkWeather() {
+            const location = document.getElementById('location').value;
+            const eventDate = document.getElementById('event-date').value;
+            
+            if (!location || !eventDate) {
+                alert('Bitte geben Sie zuerst Ort und Datum ein!');
+                return;
+            }
+
+            // Simulierte Wetter-API Antwort
+            const weatherDisplay = document.getElementById('weather-display');
+            const weatherContent = document.getElementById('weather-content');
+            
+            // In einer echten App würden Sie hier eine Wetter-API aufrufen
+            const mockWeatherData = {
+                temperature: Math.floor(Math.random() * 15) + 10, // 10-25°C
+                condition: ['Sonnig', 'Teilweise bewölkt', 'Leichter Regen'][Math.floor(Math.random() * 3)],
+                humidity: Math.floor(Math.random() * 40) + 40 // 40-80%
+            };
+            
+            weatherContent.innerHTML = `
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <strong>${mockWeatherData.temperature}°C</strong>
+                        <p>${mockWeatherData.condition}</p>
+                    </div>
+                    <div>
+                        <p>Luftfeuchtigkeit: ${mockWeatherData.humidity}%</p>
+                        <p>Für Outdoor-Events: ${mockWeatherData.condition === 'Sonnig' ? '✅ Perfekt' : '⚠️ Plan B empfohlen'}</p>
+                    </div>
+                </div>
+            `;
+            
+            weatherDisplay.style.display = 'block';
+        }
+
+        // Funktion: Timeline generieren
+        function generateTimeline() {
+            const timelineContainer = document.getElementById('timeline-container');
+            const eventDate = new Date(); // In echter App: Gewähltes Datum verwenden
+            
+            // Timeline-Punkte vor dem Event
+            const timelineItems = [
+                { days: -30, text: 'Venue buchen', icon: '🏢' },
+                { days: -21, text: 'Catering bestätigen', icon: '🍽️' },
+                { days: -14, text: 'Einladungen versenden', icon: '💌' },
+                { days: -7, text: 'Letzte Details klären', icon: '✅' },
+                { days: -1, text: 'Final Check', icon: '🔍' },
+                { days: 0, text: 'EVENT TAG! 🎉', icon: '🎯' }
+            ];
+            
+            timelineContainer.innerHTML = '';
+            
+            timelineItems.forEach(item => {
+                const date = new Date(eventDate);
+                date.setDate(date.getDate() + item.days);
+                
+                const timelineItem = document.createElement('div');
+                timelineItem.className = 'timeline-item';
+                timelineItem.innerHTML = `
+                    <div class="timeline-date">
+                        ${date.getDate()}.${date.getMonth() + 1}
+                    </div>
+                    <div>
+                        <div>${item.icon} ${item.text}</div>
+                        <small style="color: var(--gray-600);">
+                            ${item.days === 0 ? 'Heute' : 
+                              item.days > 0 ? `In ${item.days} Tagen` : 
+                              `Vor ${Math.abs(item.days)} Tagen`}
+                        </small>
+                    </div>
+                `;
+                
+                timelineContainer.appendChild(timelineItem);
+            });
+        }
+
+        // Funktion: Smart-Empfehlungen generieren
+        function generateRecommendations() {
+            const recommendationsContainer = document.getElementById('catering-recommendations');
+            const guestCount = parseInt(document.getElementById('guest-count')?.value) || 50;
+            const budget = parseInt(document.getElementById('budget')?.value) || 2000;
+            const eventType = document.getElementById('event-type')?.value || 'Hochzeit';
+            
+            // Intelligente Empfehlungen basierend auf Daten
+            let recommendations = [];
+            
+            const budgetPerPerson = budget / guestCount;
+            
+            if (budgetPerPerson >= 40) {
+                recommendations.push({
+                    title: '✨ Premium-Menü',
+                    description: '4-Gang-Menü mit erlesenen Zutaten',
+                    price: `${Math.floor(budgetPerPerson * 0.8)}€ pro Person`
+                });
+            } else if (budgetPerPerson >= 25) {
+                recommendations.push({
+                    title: '🍽️ Business-Menü',
+                    description: '3-Gang-Menü, professionell und lecker',
+                    price: `${Math.floor(budgetPerPerson * 0.7)}€ pro Person`
+                });
+            } else {
+                recommendations.push({
+                    title: '🥪 Buffet-Style',
+                    description: 'Vielfältiges Buffet für jeden Geschmack',
+                    price: `${Math.floor(budgetPerPerson * 0.6)}€ pro Person`
+                });
+            }
+            
+            // Event-spezifische Empfehlungen
+            if (eventType === 'Hochzeit') {
+                recommendations.push({
+                    title: '💒 Hochzeits-Special',
+                    description: 'Romantisches Menü mit Hochzeitstorte',
+                    price: 'Ab 35€ pro Person'
+                });
+            }
+            
+            recommendationsContainer.innerHTML = recommendations.map(rec => `
+                <div style="border: 1px solid var(--secondary-color); padding: 1rem; border-radius: var(--radius-lg); margin: 0.5rem 0;">
+                    <h5>${rec.title}</h5>
+                    <p>${rec.description}</p>
+                    <strong>${rec.price}</strong>
+                    <button class="btn" style="float: right;">Auswählen</button>
+                </div>
+            `).join('');
+        }
+
+        // Funktion: Live-Updates aktualisieren
+        function updateLiveUpdates() {
+            const updatesContainer = document.getElementById('live-updates');
+            const completedCount = eventData.completedSteps.length;
+            const totalSteps = 4;
+            
+            const progress = Math.floor((completedCount / totalSteps) * 100);
+            
+            updatesContainer.innerHTML = `
+                <div style="margin-bottom: 1rem;">
+                    <strong>Fortschritt: ${progress}%</strong>
+                    <div style="background: #eee; height: 8px; border-radius: 4px; margin-top: 0.5rem;">
+                        <div style="background: var(--success-color); height: 100%; width: ${progress}%; border-radius: 4px; transition: width 0.3s ease;"></div>
+                    </div>
+                </div>
+                <div style="font-size: 0.9rem;">
+                    ✅ ${completedCount} von ${totalSteps} Schritten abgeschlossen
+                </div>
+                <div style="font-size: 0.8rem; color: var(--gray-600); margin-top: 0.5rem;">
+                    Letztes Update: ${new Date().toLocaleTimeString('de-DE')}
+                </div>
+            `;
+        }
+
+        // Funktion: Menü-Konfigurator öffnen
+        function openMenuConfigurator() {
+            // Hier würden Sie den Menü-Konfigurator in einem Modal oder neuen Tab öffnen
+            alert('Menü-Konfigurator wird geöffnet...\n(In der echten App würde hier der Konfigurator erscheinen)');
+        }
+
+        // Funktion: Event finalisieren
+        function finalizeEvent() {
+            // Alle Event-Daten sammeln
+            const finalEventData = {
+                ...eventData,
+                type: document.getElementById('event-type').value,
+                date: document.getElementById('event-date').value,
+                guestCount: document.getElementById('guest-count').value,
+                budget: document.getElementById('budget').value,
+                location: document.getElementById('location').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('Finales Event:', finalEventData);
+            
+            // Bestätigung anzeigen
+            alert(`🎉 Perfekt! Ihr ${finalEventData.type} ist geplant!\n\n` +
+                  `📅 Datum: ${finalEventData.date}\n` +
+                  `👥 Gäste: ${finalEventData.guestCount}\n` +
+                  `💰 Budget: ${finalEventData.budget}€\n\n` +
+                  `Wir senden Ihnen eine detaillierte Zusammenfassung per E-Mail!`);
+        }
+
+        // Funktion: Benachrichtigung anzeigen
+        function showNotification(message, type = 'info') {
+            // Einfache Benachrichtigung (kann erweitert werden)
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--${type === 'success' ? 'success' : 'secondary'}-color);
+                color: white;
+                padding: 1rem;
+                border-radius: var(--radius-lg);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Nach 3 Sekunden entfernen
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+
+        // Event-Listener für Echtzeit-Updates
+        ['event-type', 'event-date', 'guest-count', 'budget'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', function() {
+                    eventData[id.replace('-', '')] = this.value;
+                    generateRecommendations();
+                    updateLiveUpdates();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
